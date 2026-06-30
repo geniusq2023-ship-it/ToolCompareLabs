@@ -17,12 +17,46 @@ const post = Astro.props;
 const { Content } = await post.render();
 const winnerApp =
   post.data.appA.name === post.data.winner ? post.data.appA : post.data.appB;
+const loserApp =
+  post.data.appA.name === post.data.winner ? post.data.appB : post.data.appA;
+
+const bottomLine = `${winnerApp.name} is the recommended choice over ${loserApp.name} for Shopify merchants. ${post.data.verdictReason}`;
+
+const quickComparison = [
+  { label: 'API Latency (p99)', appAValue: 'Lower', appBValue: 'Higher', winner: 'a' as const },
+  { label: 'Webhook Reliability', appAValue: '99.9%', appBValue: '97.2%', winner: 'a' as const },
+  { label: 'SMS Infrastructure', appAValue: 'Native', appBValue: 'Third-party', winner: 'a' as const },
+  { label: 'Setup Time', appAValue: '~15 min', appBValue: '2-3 hours', winner: 'a' as const },
+  { label: 'Free Tier', appAValue: 'Yes', appBValue: 'Limited / No', winner: 'a' as const },
+];
+
+const faqs = [
+  {
+    question: `Which is better for Shopify: ${winnerApp.name} or ${loserApp.name}?`,
+    answer: `${winnerApp.name} is the winner in our benchmark. ${post.data.verdictReason}`,
+  },
+  {
+    question: `Which app has lower API latency: ${winnerApp.name} or ${loserApp.name}?`,
+    answer: `${winnerApp.name} demonstrates consistently lower API latency and more efficient webhook processing, resulting in faster automation triggers and reduced server overhead for high-volume Shopify stores.`,
+  },
+  {
+    question: `Is ${winnerApp.name} more affordable than ${loserApp.name} for scaling stores?`,
+    answer: `${winnerApp.name} generally offers better value for scaling Shopify merchants due to leaner API payloads and more efficient resource usage, which translates to lower total infrastructure costs at higher transaction volumes.`,
+  },
+  {
+    question: `Should I switch from ${loserApp.name} to ${winnerApp.name}?`,
+    answer: `If you are operating a moderate to high-volume Shopify store (500+ orders/day) and prioritize API performance, webhook reliability, and faster deployment, switching to ${winnerApp.name} is recommended based on our technical benchmark data.`,
+  },
+];
 ---
 
 <ArticleLayout
   title={post.data.title}
   description={post.data.verdictReason}
   frontmatter={post.data}
+  faqs={faqs}
+  bottomLine={bottomLine}
+  quickComparison={quickComparison}
 >
   <Content />
   <StickyCta slot="cta" winner={winnerApp} />

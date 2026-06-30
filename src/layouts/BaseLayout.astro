@@ -1,15 +1,88 @@
 ---
 import '../styles/global.css';
 
+interface AppInfo {
+  name: string;
+  link: string;
+}
+
+interface SchemaData {
+  pubDate?: Date;
+  updatedDate?: Date;
+  category?: string;
+  winner?: string;
+  appA?: AppInfo;
+  appB?: AppInfo;
+  verdictReason?: string;
+}
+
 export interface Props {
   title: string;
   description?: string;
+  schemaData?: SchemaData;
 }
 
 const {
   title,
   description = 'ToolCompareLabs — data-driven B2B SaaS comparisons for Shopify Plus merchants.',
+  schemaData,
 } = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, 'https://toolcomparelabs.com').toString();
+
+const jsonLd = schemaData
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Article',
+          headline: title,
+          description: description,
+          url: canonicalUrl,
+          datePublished: schemaData.pubDate?.toISOString(),
+          dateModified: schemaData.updatedDate?.toISOString() || schemaData.pubDate?.toISOString(),
+          author: {
+            '@type': 'Organization',
+            name: 'ToolCompareLabs',
+            url: 'https://toolcomparelabs.com',
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'ToolCompareLabs',
+            url: 'https://toolcomparelabs.com',
+            logo: {
+              '@type': 'ImageObject',
+              url: 'https://toolcomparelabs.com/favicon.svg',
+            },
+          },
+          about: [
+            schemaData.appA && {
+              '@type': 'SoftwareApplication',
+              name: schemaData.appA.name,
+              applicationCategory: schemaData.category || 'BusinessApplication',
+              operatingSystem: 'Shopify',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+            },
+            schemaData.appB && {
+              '@type': 'SoftwareApplication',
+              name: schemaData.appB.name,
+              applicationCategory: schemaData.category || 'BusinessApplication',
+              operatingSystem: 'Shopify',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+              },
+            },
+          ].filter(Boolean),
+        },
+      ],
+    }
+  : null;
 ---
 
 <!doctype html>
@@ -19,7 +92,11 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
     <title>{title}</title>
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
   </head>
   <body class="min-h-screen bg-surface font-sans text-slate-50">
     <header class="border-b border-slate-800 bg-surface/80 backdrop-blur">
