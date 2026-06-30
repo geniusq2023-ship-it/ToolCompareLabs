@@ -1,0 +1,20 @@
+---
+import AffiliateButton from './AffiliateButton.astro';
+
+export interface Props {
+  winner: { name: string; link: string };
+}
+
+const { winner } = Astro.props;
+---
+
+<div
+  class="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-700 bg-surface/95 px-4 py-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.3)] backdrop-blur md:hidden"
+>
+  <AffiliateButton
+    href={winner.link}
+    label={`Try ${winner.name}`}
+    variant="success"
+    fullWidth
+  />
+</div>

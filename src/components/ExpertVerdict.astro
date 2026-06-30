@@ -1,0 +1,46 @@
+---
+import AffiliateButton from './AffiliateButton.astro';
+
+export interface Props {
+  winner: string;
+  verdictReason: string;
+  appA: { name: string; link: string };
+  appB: { name: string; link: string };
+}
+
+const { winner, verdictReason, appA, appB } = Astro.props;
+const apps = [appA, appB];
+const winnerApp = apps.find((app) => app.name === winner) || appA;
+const runnerUp = apps.find((app) => app.name !== winner) || appB;
+---
+
+<section
+  class="rounded-xl border-l-4 border-win bg-surface-light p-6 shadow-lg md:p-8"
+  aria-labelledby="expert-verdict-title"
+>
+  <p class="text-sm font-semibold uppercase tracking-wide text-win-light">
+    Expert Verdict
+  </p>
+  <h2
+    id="expert-verdict-title"
+    class="mt-2 text-2xl font-bold text-white md:text-3xl"
+  >
+    Winner: {winnerApp.name}
+  </h2>
+  <p class="mt-3 text-lg text-slate-300">
+    {verdictReason}
+  </p>
+
+  <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+    <AffiliateButton
+      href={winnerApp.link}
+      label={`Try ${winnerApp.name}`}
+      variant="success"
+    />
+    <AffiliateButton
+      href={runnerUp.link}
+      label={`Compare ${runnerUp.name}`}
+      variant="secondary"
+    />
+  </div>
+</section>

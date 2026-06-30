@@ -1,0 +1,38 @@
+---
+export interface Row {
+  metric: string;
+  appA: string;
+  appB: string;
+}
+
+export interface Props {
+  appAName: string;
+  appBName: string;
+  rows: Row[];
+}
+
+const { appAName, appBName, rows } = Astro.props;
+---
+
+<div class="mt-6 overflow-hidden rounded-lg border border-slate-700">
+  <table class="w-full border-collapse text-left text-sm">
+    <thead class="bg-surface-light text-slate-100">
+      <tr>
+        <th class="px-4 py-3 font-semibold">Metric</th>
+        <th class="px-4 py-3 font-semibold">{appAName}</th>
+        <th class="px-4 py-3 font-semibold">{appBName}</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-700">
+      {
+        rows.map((row) => (
+          <tr class="even:bg-surface/50">
+            <td class="px-4 py-3 font-medium text-slate-200">{row.metric}</td>
+            <td class="px-4 py-3 text-slate-300">{row.appA}</td>
+            <td class="px-4 py-3 text-slate-300">{row.appB}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

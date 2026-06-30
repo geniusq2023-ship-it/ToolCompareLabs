@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const posts = await getCollection('blog');
+const categories = [...new Set(posts.map((post) => post.data.category))];
+const sortedPosts = posts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title="ToolCompareLabs — B2B SaaS Comparisons">
+  <section class="mx-auto max-w-7xl px-4 py-16">
+    <div class="max-w-3xl">
+      <h1 class="text-4xl font-extrabold text-white md:text-5xl">
+        Data-driven SaaS comparisons for serious Shopify merchants.
+      </h1>
+      <p class="mt-6 text-xl text-slate-400">
+        Technical benchmarks, unbiased verdicts, and conversion-optimized
+        reviews.
+      </p>
+    </div>
+
+    <div class="mt-12">
+      <h2 class="text-2xl font-bold text-white">Categories</h2>
+      {
+        categories.length > 0 ? (
+          <div class="mt-4 flex flex-wrap gap-3">
+            {categories.map((category) => (
+              <a
+                href={`/${category.toLowerCase().replace(/\s+/g, '-')}`}
+                class="rounded-full border border-slate-700 bg-surface-light px-4 py-2 text-sm font-medium text-slate-300 transition hover:border-brand hover:text-white"
+              >
+                {category}
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p class="mt-4 text-slate-500">
+            No categories found. Add a comparison post to <code>src/content/blog/</code>.
+          </p>
+        )
+      }
+    </div>
+
+    <div class="mt-12" id="comparisons">
+      <h2 class="text-2xl font-bold text-white">Latest Comparisons</h2>
+      {
+        sortedPosts.length > 0 ? (
+          <div class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {sortedPosts.map((post) => (
+              <a
+                href={`/${post.slug}`}
+                class="group rounded-xl border border-slate-700 bg-surface-light p-6 transition hover:border-brand hover:shadow-lg"
+              >
+                <p class="text-xs font-semibold uppercase tracking-wide text-brand-light">
+                  {post.data.category}
+                </p>
+                <h3 class="mt-2 text-lg font-bold text-white group-hover:text-brand-light">
+                  {post.data.title}
+                </h3>
+                <p class="mt-2 text-sm text-slate-400">
+                  {post.data.appA.name} vs {post.data.appB.name}
+                </p>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p class="mt-4 text-slate-500">
+            No comparisons yet. Run the Python engine or manually add a <code>.md</code> file to <code>src/content/blog/</code>.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

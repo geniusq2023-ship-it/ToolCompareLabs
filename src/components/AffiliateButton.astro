@@ -1,0 +1,42 @@
+---
+export interface Props {
+  href: string;
+  label: string;
+  variant?: 'primary' | 'success' | 'secondary';
+  target?: string;
+  rel?: string;
+  fullWidth?: boolean;
+}
+
+const {
+  href,
+  label,
+  variant = 'primary',
+  target = '_blank',
+  rel = 'noopener noreferrer sponsored',
+  fullWidth = false,
+} = Astro.props;
+
+const baseClasses =
+  'inline-flex items-center justify-center rounded-lg px-5 py-3 font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface';
+
+const variantClasses = {
+  primary:
+    'bg-brand text-white hover:bg-brand-dark focus:ring-brand',
+  success:
+    'bg-win text-white hover:bg-win-dark focus:ring-win',
+  secondary:
+    'border border-slate-600 bg-surface-light text-slate-100 hover:border-slate-500 hover:bg-slate-800 focus:ring-slate-500',
+};
+
+const widthClass = fullWidth ? 'w-full' : '';
+---
+
+<a
+  href={href}
+  class:list={[baseClasses, variantClasses[variant], widthClass]}
+  target={target}
+  rel={rel}
+>
+  {label}
+</a>

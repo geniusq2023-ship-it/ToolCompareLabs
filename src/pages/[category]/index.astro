@@ -1,0 +1,65 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const categories = [...new Set(posts.map((post) => post.data.category))];
+
+  return categories.map((category) => {
+    const slug = category.toLowerCase().replace(/\s+/g, '-');
+    return {
+      params: { category: slug },
+      props: {
+        category,
+        posts: posts.filter((post) => post.data.category === category),
+      },
+    };
+  });
+}
+
+type Props = {
+  category: string;
+  posts: CollectionEntry<'blog'>[];
+};
+
+const { category, posts } = Astro.props;
+const sortedPosts = posts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title={`${category} Comparisons — ToolCompareLabs`}>
+  <section class="mx-auto max-w-7xl px-4 py-12">
+    <h1 class="text-3xl font-extrabold text-white md:text-4xl">
+      {category}
+    </h1>
+    <p class="mt-2 text-lg text-slate-400">
+      Data-driven comparisons in the {category} category.
+    </p>
+
+    {
+      sortedPosts.length > 0 ? (
+        <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {sortedPosts.map((post) => (
+            <a
+              href={`/${post.slug}`}
+              class="group rounded-xl border border-slate-700 bg-surface-light p-6 transition hover:border-brand hover:shadow-lg"
+            >
+              <h2 class="text-xl font-bold text-white group-hover:text-brand-light">
+                {post.data.title}
+              </h2>
+              <p class="mt-2 text-sm text-slate-400">
+                {post.data.appA.name} vs {post.data.appB.name}
+              </p>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="mt-6 text-slate-500">
+          No comparisons found in this category.
+        </p>
+      )
+    }
+  </section>
+</BaseLayout>
